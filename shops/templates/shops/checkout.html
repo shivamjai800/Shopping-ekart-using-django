@@ -1,5 +1,128 @@
 {% extends 'shops/basic.html' %}
 {% block title %} My checkout Page{% endblock title %}
 {% block body %}
-
+    <div class="container mt-4">
+        <table class="table">
+  <thead class="thead-dark">
+    <tr>
+      <th scope="col">S.NO.</th>
+      <th scope="col">Product Name</th>
+      <th scope="col">Quantity</th>
+      <th scope="col">Price Per Piece</th>
+    </tr>
+  </thead>
+  <tbody id="display_cart">
+    <tr >
+      <th scope="row">1</th>
+      <td>Mark</td>
+      <td>Otto</td>
+      <td>@mdo</td>
+    </tr>
+    <tr>
+      <th scope="row">2</th>
+      <td>Jacob</td>
+      <td>Thornton</td>
+      <td>@fat</td>
+    </tr>
+    <tr>
+      <th scope="row">3</th>
+      <td>Larry</td>
+      <td>the Bird</td>
+      <td>@twitter</td>
+    </tr>
+    <tr class="bg-primary">
+      <th scope="col">Total</th>
+      <th scope="col">Total Products</th>
+      <th scope="col">Total Quantity</th>
+      <th scope="col">Total Price</th>
+    </tr>
+  </tbody>
+</table>
+<form>
+  <div class="form-row">
+    <div class="form-group col-md-4">
+      <label for="firstname">First Name</label>
+      <input type="name" class="form-control" id="firstname" placeholder="first Name">
+    </div>
+    <div class="form-group col-md-4">
+      <label for="lastname">Last Name</label>
+      <input type="email" class="form-control" id="lastname" placeholder="last name">
+    </div>
+    
+  </div>
+  <div class="form-group">
+  <div class="form-group col-md-4">
+    <label for="inputEmail4">Email</label>
+    <input type="email" class="form-control" id="inputEmail4" placeholder="Email">
+</div>
+  </div>
+  <div class="form-group">
+    <label for="inputAddress">Address</label>
+    <input type="text" class="form-control" id="inputAddress" placeholder="1234 Main St">
+  </div>
+  <div class="form-group">
+    <label for="inputAddress2">Address 2</label>
+    <input type="text" class="form-control" id="inputAddress2" placeholder="Apartment, studio, or floor">
+  </div>
+  <div class="form-row">
+    <div class="form-group col-md-4">
+      <label for="inputCity">City</label>
+      <input type="text" class="form-control" id="inputCity">
+    </div>
+    <div class="form-group col-md-4">
+      <label for="State">Email</label>
+    <input type="State" class="form-control" id="State" placeholder="State">
+    </div>
+    <div class="form-group col-md-2">
+      <label for="inputZip">Zip</label>
+      <input type="text" class="form-control" id="inputZip">
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" id="gridCheck">
+      <label class="form-check-label" for="gridCheck">
+        Check me out
+      </label>
+    </div>
+  </div>
+  <button type="submit" class="btn btn-primary">Sign in</button>
+</form>
+</div>
 {% endblock body %}
+{% block script%}
+    if(localStorage.getItem('cart')==null){
+    var cart={};
+  }
+  else{
+    
+    cart=JSON.parse(localStorage.getItem('cart'));
+  }
+    table_changer(cart);
+  function table_changer(cart)
+  {
+      var size=Object.keys(cart).length;
+      var dis="";
+      var i = 1;
+      var sum=0;
+      for(var key in cart)
+      {
+          dis= dis+`<tr >
+      <th scope="row">${i}</th>
+      <td>${cart[key][1]}</td>
+      <td>${(cart[key][0])}</td>
+      <td>0</td>
+    </tr>`;
+          i = i+1
+          sum = sum + cart[key][0];
+      }
+      dis = dis + `<tr class="bg-primary">
+      <th scope="col">Total</th>
+      <th scope="col">Total Products = ${i+1}</th>
+      <th scope="col">Total Quantity = ${sum}</th>
+      <th scope="col">Total Price </th>
+    </tr>`;
+      document.getElementById('display_cart').innerHTML=dis;
+  }
+  
+{% endblock script%}

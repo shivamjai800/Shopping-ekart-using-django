@@ -109,16 +109,25 @@ $('.admin').on('click', 'button.cart', function(){
   
   
   var idd=this.id.toString();
+  
   if(cart[idd]!=undefined){
+    qty = Number(cart[idd][0])+1;
+    
     cart[idd]=cart[idd]+1;
   }
   else
   {
     {% comment %} console.log("you have entered inside me"); {% endcomment %}
+    qty = Number(1);
+    name=document.getElementById('namexpr'+idd.slice(2,)).innerHTML;
+    {% comment %} price =  {% endcomment %}
+    {% comment %} console.log("Here = ",name); {% endcomment %}
     
-    cart[idd]=1;
+    {% comment %} name  = "My name" {% endcomment %}
+    cart[idd]=[qty,name];
   }
   update_cart(cart);
+  {% comment %} console.log(cart); {% endcomment %}
   localStorage.setItem('cart',JSON.stringify(cart));
 });
 
@@ -130,14 +139,17 @@ function update_popover(cart)
   var i=0;
   for(var item in cart)
   {
-    console.log(cart[item]);
-    PopString = PopString + '<br>' + i +"  " +document.getElementById("namex"+item).innerHTML + "    Qty : " + cart[item] +'<br>';
+    {% comment %} console.log(cart[item][0]); {% endcomment %}
+    PopString = PopString + '<br>' + i +"  " +document.getElementById("namex"+item).innerHTML + "    Qty : " + cart[item][0] +'<br>';
     i = i+1;
   }
   PopString = PopString + "</div> <a href='checkout'><button class='btn btn-primary' id ='checkout'>Checkout</button></a> <button class='btn btn-primary' onclick='clearCart()' id ='clearCart'>Clear Cart</button>     "
   document.getElementById("popcart").setAttribute('data-content', PopString);
   $('#popcart').popover('show');
 }
+{% comment %} document.getElementById('checkout').on('click',function(){
+
+}); {% endcomment %}
 function clearCart() {
     cart = JSON.parse(localStorage.getItem('cart'));
     for (var item in cart) {
@@ -145,21 +157,23 @@ function clearCart() {
     }
     localStorage.clear();
     cart = {};
-    updateCart(cart);
+    update_cart(cart);
 }
 function update_cart(cart)
 {
   var count=0;
   var sum=0;
+  
   for (var item in cart){
-    sum = sum + cart[item];
+    {% comment %} console.log("you have clicked me" ,cart[item][0]); {% endcomment %}
+    sum = sum + Number(cart[item][0]);
     var it=item;
     item = item.slice(2,);
-    
+    {% comment %} console.log("sum = ",sum); {% endcomment %}
     
     
 
-    document.getElementById('admin'+item).innerHTML="<button id='minus"+item+"' class='btn btn-primary minus'>-</button><span id='val"+item+"'>" + cart[it] + "</span><button id='plus"+item+"' class='btn btn-primary plus'>+</button>";
+    document.getElementById('admin'+item).innerHTML="<button id='minus"+item+"' class='btn btn-primary minus'>-</button><span id='val"+item+"'>" + cart[it][0] + "</span><button id='plus"+item+"' class='btn btn-primary plus'>+</button>";
   }
   document.getElementById('carts').innerHTML = sum;
 update_popover(cart);
@@ -168,15 +182,19 @@ update_popover(cart);
 
   $('.admin').on("click","button.minus",function(){
     var index = this.id.slice(5,);
-    cart['pr'+index]=Math.max(cart['pr'+index]-1,0);
-    document.getElementById('val'+index).innerHTML=cart['pr'+index];
+    cart['pr'+index][0]=Math.max(Number(cart['pr'+index][0])-1,0);
+    document.getElementById('val'+index).innerHTML=Number(cart['pr'+index][0]);
     update_cart(cart);
 });
 $('.admin').on("click","button.plus",function(){
      var index = this.id.slice(4,);
-     console.log(cart['pr'+index]);
-    cart['pr'+index]=cart['pr'+index]+1;
-    document.getElementById('val'+index).innerHTML=cart['pr'+index];
+     
+    cart['pr'+index][0]=Number(cart['pr'+index][0])+1;
+   
+   
+   
+    {% comment %} console.log("inside + or -",cart['pr'+index][0]); {% endcomment %}
+    document.getElementById('val'+index).innerHTML=Number(cart['pr'+index][0]);
     update_cart(cart);
 });
 

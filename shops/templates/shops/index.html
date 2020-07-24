@@ -52,30 +52,25 @@ card-body-class{
           </ol>
           
           <div class="carousel-inner">
-            <div class="carousel-item active">
-              <div class="card card-class">
-                <div class="card-body card-body-class">
-                  <h5 class="card-title">{{j.0.0.product_name}}</h5>
-                  {% comment %} <p class="card-text">{{product.0.category}}</p> {% endcomment %}
-                  <p class="card-text"><small class="text-muted">{{j.0.0.desc}}</small></p>
-                  <button id="pr{{j.0.0.id}}" type="button" class="btn btn-primary cart">Add to cart</button>
-                  <a href="/shops/productview/{{j.0.0.id}}"><button id="qr{{j.0.0.id}}" type="button" class="btn btn-primary cart" >Quick View</button></a>
-                </div>
-                <img class="card-img-bottom" src='/media/{{j.0.0.image}}' alt="Card image cap">
-              </div>
-            </div>
+            
+            
             {% comment %} {{range}} {% endcomment %}
-            {% for i in j.0|slice:"1:"%}
-              
+            {% for i in j.0|slice:"0:"%}
+              {% if i is j.0.0 %}
+                  <div class="carousel-item active">
+              {% else %}
+                  <div class="carousel-item">
+              {% endif %}
             {% comment %} {% if forloop.counter|divisibleby:3 and forloop.counter > 0  %} {% endcomment %}
-            <div class="carousel-item">
+
               <div class="card card-class">
                 <div class="card-body card-body-class">
-                  <h5 class="card-title">{{i.product_name}}</h5>
+                  <h5 class="card-title " id = "namexpr{{i.id}}" >{{i.product_name}}</h5>
                   {% comment %} <p class="card-text">{{i.category}}</p> {% endcomment %}
                   <p class="card-text"><small class="text-muted">{{i.desc}}</small></p>
-                  <button id="pr{{i.id}}" type="button" class="btn btn-primary cart" >Add to cart</button>
-                  <a href="/shops/productview/{{i.id}}"><button id="qr{{i.id}}" type="button" class="btn btn-primary cart" >Quick View</button></a>
+
+                  <span id='admin{{i.id}}' class='admin'><button id="pr{{i.id}}" type="button" class="btn btn-primary cart" >Add to cart</button></span>
+                  <a href="/shops/productview/{{i.id}}"><button id="qr{{i.id}}" type="button" class="btn btn-primary" >Quick View</button></a>
                 </div>
                 <img class="card-img-up" src='/media/{{i.image}}' alt="Card image cap">
               </div>
@@ -109,8 +104,8 @@ card-body-class{
     
     cart=JSON.parse(localStorage.getItem('cart'));
   }
-$('.cart').click(function(){
-  console.log("you have clicked me");
+$('.admin').on('click', 'button.cart', function(){
+  {% comment %} console.log("you have clicked me"); {% endcomment %}
   
   
   var idd=this.id.toString();
@@ -119,14 +114,74 @@ $('.cart').click(function(){
   }
   else
   {
-    console.log("you have entered inside me");
-    document.getElementById('carts').innerHTML = Object.keys(cart).length;
+    {% comment %} console.log("you have entered inside me"); {% endcomment %}
+    
     cart[idd]=1;
   }
+  update_cart(cart);
   localStorage.setItem('cart',JSON.stringify(cart));
 });
-$('#popcart').popover();
-document.getElementById("popcart").setAttribute('data-content', '<h5>Here is my cart</h5>');
+
+function update_popover(cart)
+{
+  var PopString = "You have selected the following items";
+  
+  
+  var i=0;
+  for(var item in cart)
+  {
+    console.log(cart[item]);
+    PopString = PopString + '<br>' + i +"  " +document.getElementById("namex"+item).innerHTML + "    Qty : " + cart[item] +'<br>';
+    i = i+1;
+  }
+  PopString = PopString + "</div> <a href='checkout'><button class='btn btn-primary' id ='checkout'>Checkout</button></a> <button class='btn btn-primary' onclick='clearCart()' id ='clearCart'>Clear Cart</button>     "
+  document.getElementById("popcart").setAttribute('data-content', PopString);
+  $('#popcart').popover('show');
+}
+function clearCart() {
+    cart = JSON.parse(localStorage.getItem('cart'));
+    for (var item in cart) {
+        document.getElementById('admin' + item.slice(2,)).innerHTML = '<button id="' + item + '" class="btn btn-primary cart">Add To Cart</button>'
+    }
+    localStorage.clear();
+    cart = {};
+    updateCart(cart);
+}
+function update_cart(cart)
+{
+  var count=0;
+  var sum=0;
+  for (var item in cart){
+    sum = sum + cart[item];
+    var it=item;
+    item = item.slice(2,);
+    
+    
+    
+
+    document.getElementById('admin'+item).innerHTML="<button id='minus"+item+"' class='btn btn-primary minus'>-</button><span id='val"+item+"'>" + cart[it] + "</span><button id='plus"+item+"' class='btn btn-primary plus'>+</button>";
+  }
+  document.getElementById('carts').innerHTML = sum;
+update_popover(cart);
+  
+}
+
+  $('.admin').on("click","button.minus",function(){
+    var index = this.id.slice(5,);
+    cart['pr'+index]=Math.max(cart['pr'+index]-1,0);
+    document.getElementById('val'+index).innerHTML=cart['pr'+index];
+    update_cart(cart);
+});
+$('.admin').on("click","button.plus",function(){
+     var index = this.id.slice(4,);
+     console.log(cart['pr'+index]);
+    cart['pr'+index]=cart['pr'+index]+1;
+    document.getElementById('val'+index).innerHTML=cart['pr'+index];
+    update_cart(cart);
+});
+
+
+
 {% endblock script%}
         
 
